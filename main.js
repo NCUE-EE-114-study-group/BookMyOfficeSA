@@ -12,8 +12,7 @@ let currMonth = new Date().getMonth();
 
 let reservations = {};
 
-// const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id}/values/${tab_name}?key=${api_key}`;
-const url = "test.json";  // 替換為 Google Sheets API URL
+const url = `https://officeapi.ncuesa.org.tw`;
 
 
 const modal = document.getElementById("myModal");
@@ -57,18 +56,20 @@ function fetchReservations() {
         const rows = data.values;
         for (let i = 2; i < rows.length; i++) {
             const row = rows[i];
-            const date = parseDate(row[10]);
-            if (!reservations[date]) {
-                reservations[date] = [];
+            if (row[2] === "通過") {
+                const date = parseDate(row[10]);
+                if (!reservations[date]) {
+                    reservations[date] = [];
+                }
+                reservations[date].push({
+                    name: row[6],
+                    reason: row[8],
+                    office: row[9],
+                    date: date,
+                    startTime: row[11],
+                    endTime: row[12]
+                });
             }
-            reservations[date].push({
-                name: row[6],
-                reason: row[8],
-                office: row[9],
-                date: date,
-                startTime: row[11],
-                endTime: row[12]
-            });
         }
         generateCalendar(currYear, currMonth);
         loading.style.display = "none";
@@ -234,3 +235,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.matchMedia('(prefers-color-scheme: dark)').addListener(setThemeFromSystem);
 });
+
